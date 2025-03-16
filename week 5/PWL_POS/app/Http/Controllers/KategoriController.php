@@ -2,53 +2,67 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KategoriModel;
-use App\DataTables\KategoriDataTable;
+use App\Models\KategoriModel; // Panggil model yang benar
+use App\Http\Controllers\KategoriController;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\DB;
 
 class KategoriController extends Controller
 {
-    public function index(KategoriDataTable $table)
+    // Menampilkan semua data kategori
+    public function index()
     {
-        return $table->render('kategori.index');
-        $kategori = KategoriModel::all(); // Ambil semua data kategori
+        $kategori = KategoriModel::all(); // Panggil KategoriModel, bukan Kategori
         return view('kategori.index', compact('kategori'));
     }
 
+    // Menampilkan form tambah kategori
     public function create()
     {
         return view('kategori.create');
     }
 
+    // Menyimpan data kategori baru
     public function store(Request $request)
     {
-        Kategori::create($request->all());
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan!');
+        $request->validate([
+            'kodeKategori' => 'required|unique:m_kategori,kategori_kode',
+            'namaKategori' => 'required'
+        ]);
+
+        KategoriModel::create([
+            'kategori_kode' => $request->kodeKategori,
+            'kategori_nama' => $request->namaKategori,
+        ]);
+
+        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan');
     }
-    
+
+    // Menampilkan form edit kategori
     public function edit($id)
     {
         $kategori = KategoriModel::findOrFail($id);
         return view('kategori.edit', compact('kategori'));
     }
 
+    // Memperbarui data kategori
     public function update(Request $request, $id)
     {
         $request->validate([
-            'kategori_kode' => 'required|unique:m_kategori,kategori_kode,'.$id.',kategori_id',
-            'kategori_nama' => 'required'
+            'kodeKategori' => 'required|unique:m_kategori,kategori_kode,' . $id . ',kategori_id',
+            'namaKategori' => 'required'
         ]);
 
         $kategori = KategoriModel::findOrFail($id);
         $kategori->update([
-            'kategori_kode' => $request->kategori_kode,
-            'kategori_nama' => $request->kategori_nama,
+            'kategori_kode' => $request->kodeKategori,
+            'kategori_nama' => $request->namaKategori,
         ]);
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui');
     }
 
+    // Menghapus data kategori
     public function destroy($id)
     {
         $kategori = KategoriModel::findOrFail($id);
@@ -56,16 +70,4 @@ class KategoriController extends Controller
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus');
     }
-
-    public function getData()
-    {
-        return response()->json(Kategori::all());
-    }
-
-    public function show($id)
-{
-    $kategori = \App\Models\KategoriModel::findOrFail($id);
-
-}
-
 }
