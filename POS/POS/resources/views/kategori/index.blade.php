@@ -1,64 +1,86 @@
-@extends('layouts.app')
+@extends('layouts.template')
 
 @section('content')
-<div class="container mt-4">
-    <h2>Manage Kategori</h2>
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">{{ $page->title }}</h3>
+            <div class="card-tools">
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('kategori/create') }}">Tambah</a>
+                <button onclick="modalAction('{{ url('/kategori/create_ajax') }}')" class="btn btn-sm btn-primary mt-1">Tambah Ajax</button>
 
-    <!-- Tombol Tambah Kategori -->
-    <a href="{{ route('kategori.create') }}" class="btn btn-primary mb-3">Add Kategori</a>
-
-    <!-- Tabel Kategori -->
-    <div class="table-responsive">
-        <table id="kategoriTable" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Kategori ID</th>
-                    <th>Kategori Kode</th>
-                    <th>Kategori Nama</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($kategori as $item)
+            </div>
+        </div>
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_kategori">
+                <thead>
                     <tr>
-                        <td>{{ $item->kategori_id }}</td>
-                        <td>{{ $item->kategori_kode }}</td>
-                        <td>{{ $item->kategori_nama }}</td>
-                        <td>{{ $item->created_at->format('Y-m-d H:i:s') }}</td>
-                        <td>{{ $item->updated_at->format('Y-m-d H:i:s') }}</td>
-                        <td>
-                            <!-- Tombol Edit -->
-                            <a href="{{ route('kategori.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
-
-                            <!-- Tombol Hapus dengan Konfirmasi -->
-                            <form action="{{ route('kategori.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus kategori ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
-                        </td>
+                        <th>ID</th>
+                        <th>Kode</th>
+                        <th>Nama</th>
+                        <th>Aksi</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+            </table>
+        </div>
     </div>
-</div>
-
-<!-- DataTables Script -->
-@section('scripts')
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#kategoriTable').DataTable({
-            "ordering": true, // Aktifkan sorting
-            "searching": true, // Aktifkan pencarian
-            "paging": true, // Aktifkan pagination
-            "info": true // Tampilkan info
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data- backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true">
+    </div>
+@endsection
+@push('css')
+@endpush
+@push('js')
+    <script>
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+        var dataUser;
+        $(document).ready(function() {
+            dataUser = $('#table_kategori').DataTable({
+                processing: true,
+                serverSide: true, // Jika ingin menggunakan server-side processing
+                ajax: {
+                    "url": "{{ url('kategori/list') }}",
+                    "dataType": "json",
+                    "type": "POST",
+                    "data": function(d) {
+                        d.level_id = $('#level_id').val();
+                    }
+                },
+                columns: [{
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    }, // Kolom nomor urut
+                    {
+                        data: "kategori_kode",
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "kategori_nama",
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "aksi",
+                        className: "",
+                        orderable: false,
+                        searchable: false
+                    } // Tombol aksi
+                ]
+            });
         });
-    });
-</script>
-@endsection
-
-@endsection
+    </script>
+@endpush

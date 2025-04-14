@@ -3,22 +3,13 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1f068d5d8590c78927c3972ad233b7dd3c7919cc',
+        'reference' => 'f43e58fe8edadaf344686aef409035937fe0889c',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        'almasaeed2010/adminlte' => array(
-            'pretty_version' => 'v3.2.0',
-            'version' => '3.2.0.0',
-            'reference' => 'bd4d9c72931f1dd28601b6bfb387554a381ad540',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../almasaeed2010/adminlte',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'brick/math' => array(
             'pretty_version' => '0.12.3',
             'version' => '0.12.3.0',
@@ -373,15 +364,6 @@
                 0 => 'v10.48.28',
             ),
         ),
-        'jeroennoten/laravel-adminlte' => array(
-            'pretty_version' => 'v3.15.0',
-            'version' => '3.15.0.0',
-            'reference' => '0269331f55fa8385413895225d6d89b85babe3de',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../jeroennoten/laravel-adminlte',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'kodova/hamcrest-php' => array(
             'dev_requirement' => true,
             'replaced' => array(
@@ -400,7 +382,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1f068d5d8590c78927c3972ad233b7dd3c7919cc',
+            'reference' => 'f43e58fe8edadaf344686aef409035937fe0889c',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -459,15 +441,6 @@
             'install_path' => __DIR__ . '/../laravel/tinker',
             'aliases' => array(),
             'dev_requirement' => false,
-        ),
-        'laravel/ui' => array(
-            'pretty_version' => 'v4.6.1',
-            'version' => '4.6.1.0',
-            'reference' => '7d6ffa38d79f19c9b3e70a751a9af845e8f41d88',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../laravel/ui',
-            'aliases' => array(),
-            'dev_requirement' => true,
         ),
         'league/commonmark' => array(
             'pretty_version' => '2.6.1',
