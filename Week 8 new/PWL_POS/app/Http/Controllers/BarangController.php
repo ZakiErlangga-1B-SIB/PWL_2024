@@ -203,7 +203,7 @@ class BarangController extends Controller
                             'barang_nama' => $value['C'],
                             'harga_beli' => $value['D'],
                             'harga_jual' => $value['E'],
-                            'created_at' => now(),
+                           // 'created_at' => now(),
                         ];
                     }
                 }
