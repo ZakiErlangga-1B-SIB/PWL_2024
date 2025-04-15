@@ -26,9 +26,9 @@ class UserController extends Controller
             'title' => 'Daftar user yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'user'; // set menu yang sedang aktif
+        $activeMenu = 'user';
 
-        $level = LevelModel::all(); // ambil data level untuk filter level
+        $level = LevelModel::all();
 
         return view('user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
     }
@@ -39,164 +39,20 @@ class UserController extends Controller
         $users = UserModel::select('user_id', 'username', 'nama', 'level_id', 'photo')
             ->with('level');
 
-        // Filter data user berdasarkan level_id if ($request->level_id){
         if ($request->level_id) {
             $users->where('level_id', $request->level_id);
         }
 
         return DataTables::of($users)
-            ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
-            ->addColumn('aksi', function ($user) { // menambahkan kolom aksi
-                /* $btn = '<a href="'.url('/user/' . $user->user_id).'" class="btn btn-info btn- sm">Detail</a> ';
-                $btn .= '<a href="'.url('/user/' . $user->user_id . '/edit').'" class="btn btn- warning btn-sm">Edit</a> ';
-                $btn .= '<form class="d-inline-block" method="POST" action="'. url('/user/'.$user-
-                >user_id).'">'
-                . csrf_field() . method_field('DELETE') .
-                '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakit menghapus data ini?\');">Hapus</button></form>';*/
-                // $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($user) {
+                $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button> ';
                 return $btn;
             })
-            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
+            ->rawColumns(['aksi'])
             ->make(true);
     }
-
-
-    public function create()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Tambah User',
-            'list' => ['Home', 'User', 'Tambah']
-        ];
-
-        $page = (object) [
-            'title' => 'Tambah user baru'
-        ];
-
-        $level = LevelModel::all(); // Ambil data level untuk ditampilkan di form
-        $activeMenu = 'user'; // Set menu yang sedang aktif
-
-        return view('user.create', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'level' => $level,
-            'activeMenu' => $activeMenu
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            // username harus diisi, berupa string, minimal 3 karakter, dan unik di tabel m_user kolom username
-            'username' => 'required|string|min:3|unique:m_user,username',
-            'nama' => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
-            'password' => 'required|min:5', // password harus diisi dan minimal 5 karakter
-            'level_id' => 'required|integer' // level_id harus diisi dan berupa angka
-        ]);
-
-        UserModel::create([
-            'username' => $request->username,
-            'nama' => $request->nama,
-            'password' => bcrypt($request->password), // password dienkripsi sebelum disimpan
-            'level_id' => $request->level_id
-        ]);
-
-        return redirect('/user')->with('success', 'Data user berhasil disimpan');
-    }
-
-    public function show(string $id)
-    {
-        $user = UserModel::with('level')->find($id);
-
-        $breadcrumb = (object) [
-            'title' => 'Detail User',
-            'list' => ['Home', 'User', 'Detail']
-        ];
-
-        $page = (object) [
-            'title' => 'Detail user'
-        ];
-
-        $activeMenu = 'user'; // Set menu yang sedang aktif
-
-        return view('user.show', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'user' => $user,
-            'activeMenu' => $activeMenu
-        ]);
-    }
-
-    public function edit(string $id)
-    {
-        $user = UserModel::find($id);
-        $level = LevelModel::all();
-
-        $breadcrumb = (object) [
-            'title' => 'Edit User',
-            'list' => ['Home', 'User', 'Edit']
-        ];
-
-        $page = (object) [
-            'title' => 'Edit user'
-        ];
-
-        $activeMenu = 'user'; // Set menu yang sedang aktif
-
-        return view('user.edit', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'user' => $user,
-            'level' => $level,
-            'activeMenu' => $activeMenu
-        ]);
-    }
-    // Menyimpan perubahan data user
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            // Username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik
-            'username' => ['required', 'string', 'min:3', 'unique:m_user,username,' . $id . ',user_id'],
-            'nama' => 'required|string|max:100', // Nama harus diisi dan maksimal 100 karakter
-            'password' => 'nullable|min:5', // Password bisa diisi (minimal 5 karakter) dan bisa tidak diisi
-            'level_id' => 'required|integer' // Level_id harus diisi dan berupa angka
-        ]);
-
-        // Ambil data user berdasarkan ID
-        $user = UserModel::find($id);
-
-        // Jika password diisi, enkripsi, jika tidak, gunakan password lama
-        $password = $request->password ? bcrypt($request->password) : $user->password;
-
-        // Update data user
-        $user->update([
-            'username' => $request->username,
-            'nama' => $request->nama,
-            'password' => $password,
-            'level_id' => $request->level_id
-        ]);
-
-        return redirect('/user')->with('success', 'Data user berhasil diubah');
-    }
-
-    public function destroy(string $id)
-    {
-        $check = UserModel::find($id);
-        if (!$check) {
-            return redirect('/user')->with('error', 'Data user tidak ditemukan');
-        }
-
-        try {
-            UserModel::destroy($id);
-
-            return redirect('/user')->with('success', 'Data user berhasil dihapus');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/user')->with('error', 'Data user gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
-        }
-    }
-
-
 
     public function create_ajax()
     {
@@ -214,7 +70,7 @@ class UserController extends Controller
                 'username' => 'required|string|min:3|unique:m_user,username',
                 'nama' => 'required|string|max:100',
                 'password' => 'required|min:6',
-                'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // max 2MB
+                'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -227,7 +83,6 @@ class UserController extends Controller
                 ]);
             }
 
-            // Simpan file foto jika ada
             $photoName = null;
 
             if ($request->hasFile('photo')) {
@@ -239,7 +94,6 @@ class UserController extends Controller
                 $photoName = $filename;
             }
 
-            // Simpan data user
             UserModel::create([
                 'level_id' => $request->level_id,
                 'username' => $request->username,
@@ -274,7 +128,7 @@ class UserController extends Controller
                 'username' => 'required|max:20|unique:m_user,username,' . $id . ',user_id',
                 'nama'    => 'required|max:100',
                 'password' => 'nullable|min:6|max:20',
-                'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Tambahkan validasi file
+                'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -294,11 +148,9 @@ class UserController extends Controller
                 ]);
             }
 
-            // Hapus field password kalau kosong
             if (!$request->filled('password')) {
                 $request->request->remove('password');
             } else {
-                // Enkripsi password jika ada
                 $request->merge([
                     'password' => bcrypt($request->password)
                 ]);
@@ -342,7 +194,6 @@ class UserController extends Controller
 
     public function delete_ajax(Request $request, $id)
     {
-        // cek apakah request dari ajax
         if ($request->ajax() || $request->wantsJson()) {
             $user = UserModel::find($id);
             if ($user) {
@@ -371,7 +222,6 @@ class UserController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                // validasi file harus xls atau xlsx, max 1MB
                 'file_user' => ['required', 'mimes:xlsx', 'max:1024']
             ];
 
@@ -401,7 +251,7 @@ class UserController extends Controller
                             'username' => $value['B'],
                             'level_id' => $value['C'],
                             'password' => Hash::make($value['B']),
-                            //'created_at' => now(),
+                            'created_at' => now(),
                         ];
                     }
                 }

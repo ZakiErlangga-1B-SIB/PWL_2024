@@ -11,6 +11,7 @@ use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\ProfileController;
 
 Route::pattern('id', '[0-9]+');
 
@@ -106,6 +107,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/export_excel', [BarangController::class, 'export_excel']);
             Route::get('/export_pdf', [BarangController::class, 'export_pdf']);
         });
+        Route::post('/profile/update-foto', [ProfileController::class, 'updateFoto'])->name('profile.update_foto');
+
     });
 
 });
