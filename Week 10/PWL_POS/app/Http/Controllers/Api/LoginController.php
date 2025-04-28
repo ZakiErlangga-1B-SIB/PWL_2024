@@ -11,13 +11,13 @@ class LoginController extends Controller
     public function __invoke(Request $request)
     {
         //set validation
-        $validator = Validator::make($request->all(),[
-            'username'  => 'required',
-            'password'    => 'required'
+        $validator = Validator::make($request->all(), [
+            'username' => 'required',
+            'password' => 'required'
         ]);
 
         //if validation fails
-        if ($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
@@ -25,7 +25,7 @@ class LoginController extends Controller
         $credentials = $request->only('username', 'password');
 
         //if auth failed
-        if(!$token = auth()->guard('api')->attempt($credentials)) {
+        if (!$token = auth()->guard('api')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Username atau Password Anda salah'
@@ -34,9 +34,9 @@ class LoginController extends Controller
 
         //if auth success
         return response()->json([
-            'success'=> true,
-            'user'  => auth()->guard('api')->user(),
-            'token'=> $token
+            'success' => true,
+            'user' => auth()->guard('api')->user(),
+            'token' => $token,
         ], 200);
     }
 }

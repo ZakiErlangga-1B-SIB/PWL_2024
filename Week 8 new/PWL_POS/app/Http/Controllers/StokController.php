@@ -86,7 +86,7 @@ class StokController extends Controller
 
             $barang = BarangModel::find($request->barang_id);
             $barang->update([
-                'stok' => $barang->stok + $request->stok_jumlah
+            'stok' => (int)$barang->stok + (int)$request->stok_jumlah
             ]);
 
             StokModel::create($request->all());

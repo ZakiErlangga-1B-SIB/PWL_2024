@@ -9,11 +9,11 @@ class KategoriModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'm_kategori';
-    protected $primaryKey = 'kategori_id';
+    protected $table = 'm_kategori'; // Pastikan nama tabelnya benar
+    protected $primaryKey = 'kategori_id'; // Kalau pakai custom primary key
 
-    // public function users(): HasMany
-    // {
-    //     return $this->hasMany(BarangModel::class, 'level_id', 'level_id');
-    // }
+    protected $fillable = [
+        'kategori_kode',
+        'kategori_nama',
+    ];
 }
